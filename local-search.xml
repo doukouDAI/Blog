@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>UnityAtlas UV的问题</title>
+    <link href="/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <url>/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    
+    <content type="html"><![CDATA[<p>​            在做Sprite 溶解效果的时候，遇到一个问题，这里记录下来，就是在单个图片的情况下，vertex中传进来uv是正常的，但是一运行的话，坐标立马变得很大，因为这是基于整张atlas的坐标（Atlas空间），当传入Shader中时，并不能准确的知道这个sheet的实际坐标，就没法准确地采样。</p><p>​        要解决这个问题的关键是，根据传入的基于Atlas空间的IN.texcoord推算出基于Sprite空间的真实坐标，然后进行采样。好在Unity 提供了必要的参数，直接上代码，先是C#部分。</p><figure class="highlight c#"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c#"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetAtlasSheetPositionAndScale</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-comment">// 得到正在渲染的精灵图</span><br>  SpriteRender spriteRender = GetComponentInChildren&lt;SpriteRender&gt;();<br>  Sprite sprite = spriteRender.sprite;<br> <br>  MaterialPropertyBlock spriteMbp = <span class="hljs-keyword">new</span> MaterialPropertyBlock();<br>  spriteRender.GetPropertyBlock(spriteMbp);<br>  <br>  <span class="hljs-comment">// 传入精灵图的位置和大小</span><br>  Vector4 atlasPosition = <span class="hljs-keyword">new</span> float4(sprite.textureRect.position.x, sprite.textureRect.position.y, <br>                                       sprite.textureRect.size.x, sprite.textureRect.size.y <br>                                       );<br>  spriteMbp.SetVector(<span class="hljs-string">&quot;_AtlasPosition&quot;</span>, atlasPosition);<br>  spriteRender.SetPropertyBlock(spriteMbp);<br>&#125;<br></code></pre></div></td></tr></table></figure><p>​        然后，只需要在Shader中声明_PositionAndScale和_MainTex_TexelSize这两个变量，MainTex_TexelSize是Unity内置的变量，它的值是Vector4(1/width, 1/height, width, height )，Shader部分如下。</p><figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">float4 atlasOffsetAndScale = _AtlasPosition * MainTex_TexelSize.xyxy;<br>float2 texcoord = (IN.texcoord - atlasOffsetAndScale.xy) / atlasOffsetAndScale.zw;<br></code></pre></div></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>Unity</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Unity Shader</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
