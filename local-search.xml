@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>屏幕坐标</title>
+    <link href="/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/"/>
+    <url>/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/</url>
+    
+    <content type="html"><![CDATA[<h2 id="3D绘图的坐标转换"><a href="#3D绘图的坐标转换" class="headerlink" title="3D绘图的坐标转换"></a>3D绘图的坐标转换</h2><p>​        所有三角形顶点都会转换到虚拟镜头的坐标系上，事实上那个是被简化过的、不太完整的说明，严格来讲，所有的2D对象都要转换到2D屏幕上。<br>​        暂时不考虑屏幕像素的因素，2D屏幕坐标系的范围是在(-1, -1)到(1, 1)之间，屏幕的最左边在X轴上是-1，最上面在Y轴上1，(0, 0)代表的是屏幕中央，超过范围的点都会落在屏幕外。3D对象距离镜头上下左右的相对位置会被转换成(x, y)的二维坐标。<br>​        把3D模型在所有的三角形转换到屏幕坐标系后，就可开始对三角形开始着色。转换过后落在屏幕坐标系上的三角形提供了一个外框来限制三角形着色的范围，屏幕的分辨率越高，所需要着色的像素点越多，绘图质量越精细。<br>​        </p>]]></content>
+    
+    
+    <categories>
+      
+      <category>图形</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>UnityAtlas UV的问题</title>
     <link href="/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/"/>
     <url>/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/</url>
@@ -17,12 +36,6 @@
       
     </categories>
     
-    
-    <tags>
-      
-      <tag>Unity Shader</tag>
-      
-    </tags>
     
   </entry>
   
