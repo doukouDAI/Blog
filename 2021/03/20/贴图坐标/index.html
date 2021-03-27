@@ -18,9 +18,25 @@
   <meta name="author" content="DAI">
   <meta name="keywords" content="">
   
-  <title>友链 - DAI</title>
+  <title>贴图坐标 - DAI</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/an-old-hope.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
@@ -48,7 +64,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -142,14 +158,51 @@
 </nav>
 
     <div class="banner" id="banner" parallax=true
-         style="background: url('https://pic.imgdb.cn/item/5ea1acabc2a9a83be543cfe9.jpg') no-repeat center center;
+         style="background: url('https://pic.imgdb.cn/item/5ea1acabc2a9a83be543cfe2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="友情链接">
+            <span class="h2" id="subtitle" title="贴图坐标">
               
             </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-20 21:38" pubdate>
+        2021年3月20日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      634 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      6
+       分钟
+    </span>
+  
+
+  
+  
+</div>
 
             
           </div>
@@ -162,82 +215,78 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">贴图坐标</h1>
+            
+            <div class="markdown-body">
+              <p>模型的每个顶点都有两组数值数据，分别用于存储3D位置和2D贴图坐标，贴图坐标是以0~1之间的数值来表示，(0, 0)代表图片的左上角，(1, 1)代表图片的右下角，(0.5,0.5)代表图片的正中央。在进行三角形着色时，GPU会对三角形内部的像素内插贴图坐标。</p>
+<h2 id="坐标设置"><a href="#坐标设置" class="headerlink" title="坐标设置"></a>坐标设置</h2><p>设置贴图坐标时，可以不用去考虑图片的分辨率，它是以相对位置来定位的。例如(0.5,0.5)永远指向图片的中心点，就算图片形状发生改变，所以贴图坐标定位的是图片中X和Y轴方向上的比例位置。<br>        所以就需要把贴图的真实坐标进行必要的转换，转换方式有4种：<br>        1.直接取小数部分来使用，它永远都是0~1之间的数值，再使用相同的方法来读取（REPEAT, WRAP）。<br>        2.同样直接取小数部分，再把贴图坐标反相(MIRROR)。<br>        3.超过1的部分设置为1，小于0的部分设置为0(CLAMP)。<br>        4.超过1或者小于0的坐标会直接传回一个预先设定好的颜色(BORDER),比较旧的芯片不支持这种模式。<br>        最常见的方式是REPEAT，这样美术人员可以制作成无缝贴图。</p>
+<h2 id="MipMap"><a href="#MipMap" class="headerlink" title="MipMap"></a>MipMap</h2><p>在3D场景中有一种情况是，当一个模型使用了一张256x256的贴图，但是这个模型离相机比较远，看起来非常小，甚至只有一个像素大小，这时候用什么颜色来画出这个模型呢，一个比较合理的答案是，这个颜色应该是这张256x256的均值，但是现在GPU实时计算出这个均值需要耗费大量的时间，所以有了Mipmap的运用，Mipmap的主要作用是把图片数据分为n层，以1/2, 1/4,1/8….的方式进行压缩。可以设想如果没有Mipmap的使用，贴图在画面上被缩小时会发生“闪烁”的情况，原因是GPU最多只能读取周围4个像素来取均值，当镜头移动的时候周围的4个像素会发生变化。<br>        GPU会自动根据根据需要读取Mipmap不同的层级，当贴图被缩小的时候会提高读取速度，但是会额外占用30%的内存，数列<br>$$<br>(1/2<em>1/2)+(1/4</em>1/4)+(1/8<em>1/8)+…+(1/n</em>1/n) = 0.3<br>$$</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
                 
-
-<div class="row links">
-  
-    
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://hexo.fluid-dev.com/" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Blog"
-                   onerror="this.onerror=null; this.srcset=null; this.src='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Blog</div>
-            <div class="link-intro">主题博客</div>
-          </div>
-        </div>
-      </a>
-    </div>
-  
-    
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://hexo.fluid-dev.com/docs/" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Docs"
-                   onerror="this.onerror=null; this.srcset=null; this.src='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Docs</div>
-            <div class="link-intro">主题使用指南</div>
-          </div>
-        </div>
-      </a>
-    </div>
-  
-    
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://github.com/fluid-dev/hexo-theme-fluid" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Repo"
-                   onerror="this.onerror=null; this.srcset=null; this.src='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Repo</div>
-            <div class="link-intro">主题 GitHub 仓库</div>
-          </div>
-        </div>
-      </a>
-    </div>
-  
-</div>
-
-
-
-
-
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
+                    
+                  </div>
+                
+                
               </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/20/Shader%E7%A8%8B%E5%BA%8F/">
+                        <span class="hidden-mobile">Shader程序</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-          </div>
+
+            
+          </article>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
 
     
@@ -318,9 +367,15 @@
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
@@ -360,6 +415,45 @@
 
 
 
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
 
 
 

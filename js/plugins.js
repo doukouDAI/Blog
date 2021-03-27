@@ -128,6 +128,9 @@ Fluid.plugins = {
       if (pre.find('code.mermaid').length > 0) {
         return;
       }
+      if (pre.find('span.line').length > 0) {
+        return;
+      }
       pre.append(copyHtml);
     });
     var clipboard = new window.ClipboardJS('.copy-btn', {
@@ -159,13 +162,7 @@ Fluid.plugins = {
       if (img.complete) { img.onload(); }
     }
 
-    var images = $('main img:not([srcset])');
-    var notLazyImages = [];
-    for (const img of images) {
-      if (!img.srcset) {
-        notLazyImages.push(img);
-      }
-    }
+    var notLazyImages = $('main img:not([lazyload])');
     var total = notLazyImages.length;
     for (const img of notLazyImages) {
       const old = img.onload;
