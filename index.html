@@ -182,130 +182,6 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/">贴图坐标</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/">
-          
-          
-            
-          
-          模型的每个顶点都有两组数值数据，分别用于存储3D位置和2D贴图坐标，贴图坐标是以0~1之间的数值来表示，(0, 0)代表图片的左上角，(1, 1)代表图片的右下角，(0.5,0.5)代表图片的正中央。在进行三角形着色时，GPU会对三角形内部的像素内插贴图坐标。
-坐标设置设置贴图坐标时，可以不用去考虑图片的分辨率，它是以相对位置来定位的。例如(0.5,0.5)永远指向图片的中心点，就算图片形状发生改
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-20 21:38" pubdate>
-              2021-03-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/20/Shader%E7%A8%8B%E5%BA%8F/">Shader程序</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/20/Shader%E7%A8%8B%E5%BA%8F/">
-          
-          
-            
-          
-          
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-20 20:36" pubdate>
-              2021-03-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/">屏幕坐标</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/">
-          
-          
-            
-          
-          ​        所有三角形顶点都会转换到虚拟镜头的坐标系上，事实上那个是被简化过的、不太完整的说明，严格来讲，所有的2D对象都要转换到2D屏幕上。​        暂时不考虑屏幕像素的因素，2D屏幕坐标系的范围是在(-1, -1)到(1, 1)之间，屏幕的最左边在X轴上是-1，最上面在Y轴上1，(0, 0)代表的是屏幕中央，超过范围的点都会落在屏幕外。3D对象距离镜头上下左右的相对位置会被转换成
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-20 18:40" pubdate>
-              2021-03-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
         <a href="/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/">UnityAtlas UV的问题</a>
       </h1>
 
@@ -334,6 +210,172 @@
             <i class="iconfont icon-category"></i>
             
               <a href="/categories/Unity/">Unity</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/29/Depth/">Depth</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/29/Depth/">
+          
+          
+            
+          
+          Z-BufferZ-Buffer 是一个非常重要的buffer，它可以决定模型是否可以被看见，或者是否会被遮挡。
+
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-29 21:02" pubdate>
+              2019-03-29
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/">贴图坐标</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/">
+          
+          
+            
+          
+          模型的每个顶点都有两组数值数据，分别用于存储3D位置和2D贴图坐标，贴图坐标是以0~1之间的数值来表示，(0, 0)代表图片的左上角，(1, 1)代表图片的右下角，(0.5,0.5)代表图片的正中央。在进行三角形着色时，GPU会对三角形内部的像素内插贴图坐标。
+坐标设置设置贴图坐标时，可以不用去考虑图片的分辨率，它是以相对位置来定位的。例如(0.5,0.5)永远指向图片的中心点，就算图片形状发生改
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-20 21:38" pubdate>
+              2019-03-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/20/Shader%E7%A8%8B%E5%BA%8F/">Shader程序</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/20/Shader%E7%A8%8B%E5%BA%8F/">
+          
+          
+            
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-20 20:36" pubdate>
+              2019-03-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/">屏幕坐标</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/">
+          
+          
+            
+          
+          ​        所有三角形顶点都会转换到虚拟镜头的坐标系上，事实上那个是被简化过的、不太完整的说明，严格来讲，所有的2D对象都要转换到2D屏幕上。​        暂时不考虑屏幕像素的因素，2D屏幕坐标系的范围是在(-1, -1)到(1, 1)之间，屏幕的最左边在X轴上是-1，最上面在Y轴上1，(0, 0)代表的是屏幕中央，超过范围的点都会落在屏幕外。3D对象距离镜头上下左右的相对位置会被转换成
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-20 18:40" pubdate>
+              2019-03-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%9B%BE%E5%BD%A2/">图形</a>
             
           </div>
         

@@ -4,9 +4,47 @@
   
   
   <entry>
+    <title>UnityAtlas UV的问题</title>
+    <link href="/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <url>/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    
+    <content type="html"><![CDATA[<p>​            在做Sprite 溶解效果的时候，遇到一个问题，这里记录下来，就是在单个图片的情况下，vertex中传进来uv是正常的，但是一运行的话，坐标立马变得很大，因为这是基于整张atlas的坐标（Atlas空间），当传入Shader中时，并不能准确的知道这个sheet的实际坐标，就没法准确地采样。</p><p>​        要解决这个问题的关键是，根据传入的基于Atlas空间的IN.texcoord推算出基于Sprite空间的真实坐标，然后进行采样。好在Unity 提供了必要的参数，直接上代码，先是C#部分。</p><figure class="highlight c#"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c#"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetAtlasSheetPositionAndScale</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-comment">// 得到正在渲染的精灵图</span><br>  SpriteRender spriteRender = GetComponentInChildren&lt;SpriteRender&gt;();<br>  Sprite sprite = spriteRender.sprite;<br> <br>  MaterialPropertyBlock spriteMbp = <span class="hljs-keyword">new</span> MaterialPropertyBlock();<br>  spriteRender.GetPropertyBlock(spriteMbp);<br>  <br>  <span class="hljs-comment">// 传入精灵图的位置和大小</span><br>  Vector4 atlasPosition = <span class="hljs-keyword">new</span> float4(sprite.textureRect.position.x, sprite.textureRect.position.y, <br>                                       sprite.textureRect.size.x, sprite.textureRect.size.y <br>                                       );<br>  spriteMbp.SetVector(<span class="hljs-string">&quot;_AtlasPosition&quot;</span>, atlasPosition);<br>  spriteRender.SetPropertyBlock(spriteMbp);<br>&#125;<br></code></pre></div></td></tr></table></figure><p>​        然后，只需要在Shader中声明_PositionAndScale和_MainTex_TexelSize这两个变量，MainTex_TexelSize是Unity内置的变量，它的值是Vector4(1/width, 1/height, width, height )，Shader部分如下。</p><figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">float4 atlasOffsetAndScale = _AtlasPosition * MainTex_TexelSize.xyxy;<br>float2 texcoord = (IN.texcoord - atlasOffsetAndScale.xy) / atlasOffsetAndScale.zw;<br></code></pre></div></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>Unity</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Depth</title>
+    <link href="/2019/03/29/Depth/"/>
+    <url>/2019/03/29/Depth/</url>
+    
+    <content type="html"><![CDATA[<h2 id="Z-Buffer"><a href="#Z-Buffer" class="headerlink" title="Z-Buffer"></a>Z-Buffer</h2><p>Z-Buffer 是一个非常重要的buffer，它可以决定模型是否可以被看见，或者是否会被遮挡。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>图形</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>贴图坐标</title>
-    <link href="/2021/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/"/>
-    <url>/2021/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/</url>
+    <link href="/2019/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/"/>
+    <url>/2019/03/20/%E8%B4%B4%E5%9B%BE%E5%9D%90%E6%A0%87/</url>
     
     <content type="html"><![CDATA[<p>模型的每个顶点都有两组数值数据，分别用于存储3D位置和2D贴图坐标，贴图坐标是以0~1之间的数值来表示，(0, 0)代表图片的左上角，(1, 1)代表图片的右下角，(0.5,0.5)代表图片的正中央。在进行三角形着色时，GPU会对三角形内部的像素内插贴图坐标。</p><h2 id="坐标设置"><a href="#坐标设置" class="headerlink" title="坐标设置"></a>坐标设置</h2><p>设置贴图坐标时，可以不用去考虑图片的分辨率，它是以相对位置来定位的。例如(0.5,0.5)永远指向图片的中心点，就算图片形状发生改变，所以贴图坐标定位的是图片中X和Y轴方向上的比例位置。</p><p>所以就需要把贴图的真实坐标进行必要的转换，转换方式有4种：<br>1.直接取小数部分来使用，它永远都是0~1之间的数值，再使用相同的方法来读取（REPEAT, WRAP）。<br>2.同样直接取小数部分，再把贴图坐标反相(MIRROR)。<br>3.超过1的部分设置为1，小于0的部分设置为0(CLAMP)。<br>4.超过1或者小于0的坐标会直接传回一个预先设定好的颜色(BORDER),比较旧的芯片不支持这种模式。</p><p>最常见的方式是REPEAT，这样美术人员可以制作成无缝贴图。</p><h2 id="MipMap"><a href="#MipMap" class="headerlink" title="MipMap"></a>MipMap</h2><p>在3D场景中有一种情况是，当一个模型使用了一张256x256的贴图，但是这个模型离相机比较远，看起来非常小，甚至只有一个像素大小，这时候用什么颜色来画出这个模型呢，一个比较合理的答案是，这个颜色应该是这张256x256的均值，但是现在GPU实时计算出这个均值需要耗费大量的时间，所以有了Mipmap的运用，Mipmap的主要作用是把图片数据分为n层，以$\frac{1}{2}$, $\frac{1}{4}$,$\frac{1}{8}$….的方式进行压缩。可以设想如果没有Mipmap的使用，贴图在画面上被缩小时会发生“闪烁”的情况，原因是GPU最多只能读取周围4个像素来取均值，当镜头移动的时候周围的4个像素会发生变化。</p><p>GPU会自动根据根据需要读取Mipmap不同的层级，当贴图被缩小的时候会提高读取速度，但是会额外占用30%的内存，数列$(\frac{1}{2}*\frac{1}{2})+(\frac{1}{4}*\frac{1}{4})+(\frac{1}{8}*\frac{1}{8})+\cdots+(\frac{1}{n}*\frac{1}{n})$约等于0.3。</p><h2 id="MipMap渲染方式"><a href="#MipMap渲染方式" class="headerlink" title="MipMap渲染方式"></a>MipMap渲染方式</h2><ol><li><strong>Bilinear:</strong> 要求GPU找出最接近大小的Mipmap纹理贴图，然后再取出纹理中最接近的4个像素来做加权平均，越接近的点得到越高的权重。</li><li><strong>Trilinear:</strong> 要求GPU找出最接近大小的两张纹理贴图，然后再从这两张贴图中各取出最接近的4个点来做加权平均，最后再对这两个平均值加权得到最后的颜色，越接近正确缩小比例的纹理越得到越高的权重。</li><li><strong>Anisotropic Filter:</strong> Bilinear和Trilinear可以解决贴图被缩小时出现噪声的问题，但是它们有一个共同的问题是，某些时候贴图显示的结果过于模糊，原因是有时图片只在单一方向被缩小，例如它有可能是上下被压缩，但是左右的方向维持不变，Mipmap在选择纹理时，是用最极端的方式来看，假设上下被压缩为$\frac{1}{16}$而左右方向保持不变，硬件会选择$\frac{1}{16}*\frac{1}{16}$的那一层纹理，而不会选择$1 * \frac{1}{16}$的那一层纹理纹理。只要镜头不是正对模型这种情况就会发生，现在GPU支持的方法是Anisotropic Filter，事实上贴图贴图拉扯或压缩不只会发生在水平或是垂直方向，它还会发生在对角线方向或者任意方向，Anisotropic Filter能够依照贴图的被拉扯或压缩的情况从贴图中取出合适的像素来计算均值。</li></ol>]]></content>
     
@@ -24,8 +62,8 @@
   
   <entry>
     <title>Shader程序</title>
-    <link href="/2021/03/20/Shader%E7%A8%8B%E5%BA%8F/"/>
-    <url>/2021/03/20/Shader%E7%A8%8B%E5%BA%8F/</url>
+    <link href="/2019/03/20/Shader%E7%A8%8B%E5%BA%8F/"/>
+    <url>/2019/03/20/Shader%E7%A8%8B%E5%BA%8F/</url>
     
     <content type="html"><![CDATA[]]></content>
     
@@ -43,8 +81,8 @@
   
   <entry>
     <title>屏幕坐标</title>
-    <link href="/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/"/>
-    <url>/2021/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/</url>
+    <link href="/2019/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/"/>
+    <url>/2019/03/20/%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87/</url>
     
     <content type="html"><![CDATA[<p>​        所有三角形顶点都会转换到虚拟镜头的坐标系上，事实上那个是被简化过的、不太完整的说明，严格来讲，所有的2D对象都要转换到2D屏幕上。<br>​        暂时不考虑屏幕像素的因素，2D屏幕坐标系的范围是在(-1, -1)到(1, 1)之间，屏幕的最左边在X轴上是-1，最上面在Y轴上1，(0, 0)代表的是屏幕中央，超过范围的点都会落在屏幕外。3D对象距离镜头上下左右的相对位置会被转换成(x, y)的二维坐标。<br>​        把3D模型在所有的三角形转换到屏幕坐标系后，就可开始对三角形开始着色。转换过后落在屏幕坐标系上的三角形提供了一个外框来限制三角形着色的范围，屏幕的分辨率越高，所需要着色的像素点越多，绘图质量越精细。<br>​        物体在镜头前后方向的深度值为Depth，2D屏幕把Depth存储在Z buffer中，用来做消隐处理，Z Buffer Test和Depth Test都是做消隐处理的方式。<br>​        屏幕坐标上Z轴的范围是0~1，小于0会被视为落在镜头的后面(近裁切面)，大于1被视为超过镜头可以看的的最大距离(远裁切面)。<br>​        现在绘图芯片都提供基于硬件的坐标坐标转换功能，只要把一系列转换矩阵设置好就可以了。</p>]]></content>
     
@@ -52,25 +90,6 @@
     <categories>
       
       <category>图形</category>
-      
-    </categories>
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>UnityAtlas UV的问题</title>
-    <link href="/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/"/>
-    <url>/2020/12/27/UnityAtlas-UV%E7%9A%84%E9%97%AE%E9%A2%98/</url>
-    
-    <content type="html"><![CDATA[<p>​            在做Sprite 溶解效果的时候，遇到一个问题，这里记录下来，就是在单个图片的情况下，vertex中传进来uv是正常的，但是一运行的话，坐标立马变得很大，因为这是基于整张atlas的坐标（Atlas空间），当传入Shader中时，并不能准确的知道这个sheet的实际坐标，就没法准确地采样。</p><p>​        要解决这个问题的关键是，根据传入的基于Atlas空间的IN.texcoord推算出基于Sprite空间的真实坐标，然后进行采样。好在Unity 提供了必要的参数，直接上代码，先是C#部分。</p><figure class="highlight c#"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c#"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetAtlasSheetPositionAndScale</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-comment">// 得到正在渲染的精灵图</span><br>  SpriteRender spriteRender = GetComponentInChildren&lt;SpriteRender&gt;();<br>  Sprite sprite = spriteRender.sprite;<br> <br>  MaterialPropertyBlock spriteMbp = <span class="hljs-keyword">new</span> MaterialPropertyBlock();<br>  spriteRender.GetPropertyBlock(spriteMbp);<br>  <br>  <span class="hljs-comment">// 传入精灵图的位置和大小</span><br>  Vector4 atlasPosition = <span class="hljs-keyword">new</span> float4(sprite.textureRect.position.x, sprite.textureRect.position.y, <br>                                       sprite.textureRect.size.x, sprite.textureRect.size.y <br>                                       );<br>  spriteMbp.SetVector(<span class="hljs-string">&quot;_AtlasPosition&quot;</span>, atlasPosition);<br>  spriteRender.SetPropertyBlock(spriteMbp);<br>&#125;<br></code></pre></div></td></tr></table></figure><p>​        然后，只需要在Shader中声明_PositionAndScale和_MainTex_TexelSize这两个变量，MainTex_TexelSize是Unity内置的变量，它的值是Vector4(1/width, 1/height, width, height )，Shader部分如下。</p><figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">float4 atlasOffsetAndScale = _AtlasPosition * MainTex_TexelSize.xyxy;<br>float2 texcoord = (IN.texcoord - atlasOffsetAndScale.xy) / atlasOffsetAndScale.zw;<br></code></pre></div></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>Unity</category>
       
     </categories>
     
